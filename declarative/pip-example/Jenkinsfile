@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    stages {
+        stage ('Clone') {
+            steps {
+                git branch: 'master', url: "https://github.com/jfrog/project-examples.git"
+            }
+        }
+
+        stage ('Configuration') {
+            steps {
+                rtServer (
+                    id: "ARTIFACTORY_SERVER",
+                    url: "https://playtikatraining.jfrog.io/artifactory",
+                    credentialsId: "rt"
+                )
+
+                rtPipResolver (
+                    id: "PIP_RESOLVER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    repo: "default-pypi"
+                )
+            }
+        }
+
+        stage ('Pip install') {
+            steps {
+                rtPipInstall (
+                    resolverId: "PIP_RESOLVER",
+                    args: "-r python-example/requirements.txt"
+                )
+            }
+        }
+
+        stage ('Package and create distribution archives') {
+            steps {
+                sh '''
+                    $virtual_env_activation
+                    cd python-example
+                    python3 setup.py sdist bdist_wheel
+                '''
+            }
+        }
+
+        stage ('Upload packages') {
+            steps {
+                rtUpload (
+                    serverId: "ARTIFACTORY_SERVER",
+                    spec: '''{
+                        "files": [
+                            {
+                                "pattern": "python-example/dist/",
+                                "target": "default-pypi-local/"
+                            }
+                        ]
+                    }'''
+                )
+            }
+        }
+
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "ARTIFACTORY_SERVER"
+                )
+            }
+        }
+    }
+}
