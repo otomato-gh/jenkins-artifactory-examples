@@ -1,15 +1,15 @@
 node {
-    def server = Artifactory.server SERVER_ID
+    def server = Artifactory.server "playtika"
     def rtPip = Artifactory.newPipBuild()
     def buildInfo
-    def virtual_env_activation = "source /Users/myUser/venv-example/bin/activate" // pip virtual-environment activation command
+    //def virtual_env_activation = "source /Users/myUser/venv-example/bin/activate" // pip virtual-environment activation command
 
     stage ('Clone') {
-        git url: 'https://github.com/jfrog/project-examples.git'
+	checkout scm
     }
 
     stage ('Artifactory configuration') {
-        rtPip.resolver repo: 'pypi-virtual', server: server
+        rtPip.resolver repo: 'default-pypi', server: server
         buildInfo = Artifactory.newBuildInfo()
     }
 
@@ -19,7 +19,7 @@ node {
 
     stage ('Package and create distribution archives') {
         sh '''
-            $virtual_env_activation
+            //$virtual_env_activation
             cd python-example
             python setup.py sdist bdist_wheel
         '''
