@@ -19,7 +19,7 @@ node {
 
     stage ('Package and create distribution archives') {
         sh '''
-            //$virtual_env_activation
+            #$virtual_env_activation
             python3 setup.py sdist bdist_wheel
         '''
     }
