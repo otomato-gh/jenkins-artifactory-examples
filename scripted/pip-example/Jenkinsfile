@@ -14,13 +14,12 @@ node {
     }
 
     stage ('Pip install') {
-        rtPip.install buildInfo: buildInfo, args: "-r python-example/requirements.txt" //, envActivation: virtual_env_activation
+        rtPip.install buildInfo: buildInfo, args: "-r requirements.txt" //, envActivation: virtual_env_activation
     }
 
     stage ('Package and create distribution archives') {
         sh '''
             //$virtual_env_activation
-            cd python-example
             python setup.py sdist bdist_wheel
         '''
     }
@@ -29,7 +28,7 @@ node {
         def uploadSpec = """{
             "files": [
                 {
-                    "pattern": "python-example/dist/",
+                    "pattern": "dist/",
                     "target": "pypi-virtual/"
                 }
             ]
