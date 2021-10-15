@@ -29,7 +29,7 @@ node {
             "files": [
                 {
                     "pattern": "dist/",
-                    "target": "pypi-virtual/"
+                    "target": "default-pypi-local/"
                 }
             ]
         }"""
