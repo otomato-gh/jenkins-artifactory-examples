@@ -1,5 +1,5 @@
 node {
-    def server = Artifactory.server "playtika"
+    def server = Artifactory.server "otomato" //define this JFrog server id in Jenkins system configuration
     def rtPip = Artifactory.newPipBuild()
     def buildInfo
     //def virtual_env_activation = "source /Users/myUser/venv-example/bin/activate" // pip virtual-environment activation command
